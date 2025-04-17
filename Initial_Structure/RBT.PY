@@ -1,4 +1,5 @@
 class Node:
+
     def __init__(self,value):  #this is the constructor and self is like "this" in java
         self.value=value
         self.color='RED'
@@ -8,6 +9,7 @@ class Node:
 
 
 class RBT:
+
     def __init__(self):
         self.nil=Node(None)
         self.nil.color='BLACK'
@@ -122,7 +124,7 @@ class RBT:
         if node!=self.nil:
             return node
         else:
-            return null
+            return None
 
 
     def get_tree_height(self, node=None):
@@ -136,6 +138,7 @@ class RBT:
             left_height=self.get_tree_height(node.left)
             right_height=self.get_tree_height(node.right)
 
+        #Getting the max of the right and left subtrees
         return 1+max(left_height,right_height)
 
 
@@ -146,7 +149,7 @@ class RBT:
         black_height=0  #initialize black height with 0
 
         while node!=self.nil:
-            if node.color=="Black":
+            if node.color=="BLACK":
                 black_height+=1
             node=node.left  #does not matter left or right bec. it is fixed for all possible ways to nil
 
@@ -154,20 +157,75 @@ class RBT:
         return black_height
 
 
-if __name__ == "__main__":
-    tree = RBT()
-    tree.insert(10)
-    tree.insert(5)
-    tree.insert(15)
-    tree.insert(1)
-    tree.insert(7)
-    tree.insert(12)
-    tree.insert(18)
-    print(tree.root.right.right.color)
-    print(tree.root.color)
-    print(tree.root.left.right.color)
-    print("Tree created successfully!")
+    def get_tree_size(self, node=None):
+        if node is None:
+            node=self.root
 
+        if node == self.nil:
+            return 0
+
+        else :  #getting the left and right length and add both
+            return 1+self.get_tree_size(node.right)+self.get_tree_size(node.left)
+
+#Creating class dictionary that inherent from the red black trees
+class Dictionary(RBT):
+
+    def __init__(self,filename):
+        #Use the RBT constructor and add the filename attribute to the dictionary
+        super().__init__()
+        self.filename=filename
+
+    def load(self):
+        #Upload word by word and insert it the the tree
+        with open(self.filename, "r") as file:
+            for line in file:
+                word= line.strip("\n")
+                self.insert(word)
+
+    """
+    def save(self):
+        with open("Dictionary.txt", "w") as file:
+
+            def recursive_save(node):
+                if node != self.nil:
+                    recursive_save(node.left)
+                    file.write(node.value + "\n")
+                    recursive_save(node.right)
+
+            recursive_save(self.root)
+    """
+
+    def insert_word(self, value):
+        #insert the word in the RBT if not already in the file
+        #If inserted, write it in the file and print the RBT size, height, and black height
+        if self.search(value) is None :
+            self.insert(value)
+
+            with open(self.filename, "a") as file:
+                file.write("\n")
+                file.write(value)
+
+            print("Word inserted successfully! \nSize=" + str(self.get_tree_size()) +
+                  "\nHeight=" + str(self.get_tree_height()) +
+                  "\nBlack Height=" + str(self.get_black_height()))
+        else:
+            print("ERROR: Word already in the dictionary!")
+
+
+    def look_up_word(self, value):
+        #Search and print yes or no
+        if self.search(value) is not None :
+            print("YES")
+        else:
+            print("NO")
+
+
+if __name__ == "__main__":
+    #Main function to test
+    dictionary=Dictionary("Dictionary.txt")
+    dictionary.load()
+    dictionary.insert_word("Amr")
+    dictionary.look_up_word("hollow's")
 
 
         
